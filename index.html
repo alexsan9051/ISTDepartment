@@ -1,0 +1,388 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Project 2</title>
+	<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<style>
+		body { font-family: 'Roboto Condensed'; }
+	</style>
+	<link
+	    rel="stylesheet"
+	    href=
+	"https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+	  <script src=
+	"https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js">
+	  </script>
+	  <script src=
+	"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js">
+	  </script>
+	  <script src=
+	"https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js">
+	  </script>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<link href="https://cdn.jsdelivr.net/npm/featherlight@1.7.14/release/featherlight.min.css" type="text/css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/style.css">
+	<script type="text/javascript">
+
+
+		//now what?
+		//api:  http://www.ist.rit.edu/api/
+		$(document).ready(function(){
+	    //get about page
+	    // $.ajax({
+	    //   type:'get',
+	    //   url:'proxy.php',
+	    //   data:{path:"/about/"},
+	    //   dataType:'json'
+	    // }).done(function(msg){
+	    //   console.log(msg);
+	    //   //put out title
+	    //   $('#content').append('<h3>'+msg.title+'</h3>');
+	    // });
+	    // //get undergrad
+	    // $.ajax({
+	    //   type:'get',
+	    //   url:{path:'/degrees/undergraduate/'},
+	    //   dataType:'json'
+	    // }).done(function(msg){
+	    //   console.log(msg);
+	    //   $.each(msg.undergraduate,function(i, item){
+	    //     $('#content').append('<h4>' + item.title + '</h4>');
+	    //     $('#content').append('<h4>' + this.description + '</h4>');
+	    //   });
+	    // });
+
+	    //using utility
+	    //get minors
+	    xhr('get',{path:'/about/'}).done(function(json){
+	      //console.log(json);
+	      //put out title
+	      $('#about').append('<h2>'+json.title+'</h2>');
+				$('#about').append('<hr>');
+	      $('#about').append('<p>'+json.description+'</p>');
+	      $('#about').append('<p>'+json.quote+'</p>');
+	      $('#about').append('<footer> -'+json.quoteAuthor+'</footer> <br>');
+	    });
+
+	    xhr('get',{path:'/degrees/undergraduate/'}).done(function(json){
+	      //console.log(json);
+				let u='';
+	      $.each(json.undergraduate,function(i, item){
+					var imgsrc = {
+						0: "https://img.icons8.com/carbon-copy/100/000000/web.png",
+						1: "https://img.icons8.com/external-itim2101-lineal-itim2101/64/000000/external-human-artificial-intelligence-itim2101-lineal-itim2101.png",
+						2: "https://img.icons8.com/external-outline-juicy-fish/60/000000/external-it-devops-outline-outline-juicy-fish.png"
+					}
+					u+='<div class="col-md-4 col-sm-4 col-xs-12" data-featherlight="#fl" data-username="'+this.degreeName+'"><div class="our-team"><img style="width:75px; height: 75px;" src="'+imgsrc[i]+'"/><h4 class="degree-name">'+this.title+'</h4><p>'+this.description+'</p><img src="assets/media/clickme.png"/></div></div>'
+	        });
+					$('#undergrad .row').append(u);
+					//while I have json, assign the event to it
+					$('#undergrad .row .col-md-4').on('click',function(){
+						//console.log(json);
+						var degreeName = $(this).attr('data-username');
+						//console.log(degreeName);
+						var me = getAttributesByName(json.undergraduate, 'degreeName', degreeName);
+						let info='';
+						let l=''
+						//goes through each item in the concentrations array and puts it in l, with html around it.
+						$.each(me.concentrations,function(i, item){
+							l+='<li class=concentration>'+item+'</li>';
+						});
+						//console.log(l);
+						info='<div id="fl" class="lightbox"><h3 class="title">'+me.title+'<ul><li class="concentration">concentrations<hr></li>'+l+'</ul></h3></div>';
+
+						//if fl div exists, delete it and append to it, if not, just append to it.
+						if($('#fl').length == 0){
+							$('body').append(info);
+						} else {
+							$('#fl').remove()
+							$('body').append(info);
+						}
+					});
+	    });
+
+	    xhr('get',{path:'/degrees/graduate/'}).done(function(json){
+	      //console.log(json);
+				let g='';
+					$.each(json.graduate,function(i, item){
+						if (i=='3'){
+							console.log("Do nothing");
+						}else{
+							var imgsrc = {
+								0: "assets/media/gradinfo.png",
+								1: "assets/media/hci.png",
+								2: "assets/media/router.png"
+							}
+							g+='<div class="col-md-4 col-sm-4 col-xs-12" data-featherlight="#fl" data-username="'+this.degreeName+'"><div class="our-team"><img style="width:75px; height: 75px;" src="'+imgsrc[i]+'"/><h4 class="degree-name">'+this.title+'</h4><p>'+this.description+'</p><img src="assets/media/clickme.png"/></div></div>'
+						}
+						});
+					$('#grad .row').append(g);
+					//while I have json, assign the event to it
+					$('#grad .row .col-md-4').on('click',function(){
+						//console.log(json);
+						var degreeName = $(this).attr('data-username');
+						console.log(degreeName);
+						var me = getAttributesByName(json.graduate, 'degreeName', degreeName)
+						let info='';
+						let l=''
+						$.each(me.concentrations,function(i, item){
+							l+='<li class=concentration>'+item+'</li>';
+						});
+						//console.log(l);
+						info='<div id="fl" class="lightbox"><h3 class="title">'+me.title+'<ul><li class="concentration">concentrations<hr></li>'+l+'</ul></h3></div>';
+						if($('#fl').length == 0){
+							$('body').append(info);
+						} else {
+							$('#fl').remove()
+							$('body').append(info);
+						}
+						//console.log(me);
+					});
+	    });
+
+	    xhr('get',{path:'/minors/'}, '#minors').done(function(json){
+	      //console.log(json);
+				let m='';
+	      $.each(json.UgMinors,function(i, item){
+					m+='<div class="col-md-4 col-sm-4 col-xs-12" data-featherlight="#fl" data-username="'+this.name+'"><div class="our-team"> <h4 class="degree-name">'+this.title+'</h4><img src="assets/media/clickme.png"/></div></div>'
+	        //$('#content').append('<p>' + this.description + '</p>');
+	        });
+					$('#minors .row').append(m);
+						//while I have json, assign the event to it
+						$('#minors .row .col-md-4').on('click',function(){
+							//console.log(json);
+							var name = $(this).attr('data-username');
+							//console.log(username);
+							var me = getAttributesByName(json.UgMinors, 'name', name);
+							let l=''
+							//goes through each item in the courses array and puts it in l, with html around it.
+							$.each(me.courses,function(i, item){
+								l+='<div class="col-md-3 col-sm-12 col-xs-12"><li class=concentration>'+item+'</li></div>';
+							});
+							let info = '';
+							info='<div id="fl" class="lightbox"><h3 class="aligncenter">'+me.title+'</h3><hr><p style="font-size: 16px;">'+me.description+'</p><hr><p class="aligncenter" style="font-size: 16px;">Courses:</p><div class="container"><ul class="row">'+l+'</ul></div></div>'
+							//if the featherlight exists, delete it and append to it
+							if($('#fl').length == 0){
+								$('body').append(info);
+							} else {
+								$('#fl').remove()
+								$('body').append(info);
+							}
+							console.log(me);
+						});
+	    });
+
+			xhr('get',{path:'/employment/'}, '#emp').done(function(json){
+				$('#emp').append('<div><h2>'+json.introduction.title+'</h2></div><h5 class="stats">'+json.introduction.content[0].title+'</h5><hr><p>'+json.introduction.content[0].description+'</p><br>');
+				let s='';
+				$.each(json.degreeStatistics.statistics,function(i, item){
+					s+='<div class="col-md-3 col-sm-12 col-xs-12"><div class="our-team"><h3 class="degree-name stats">'+json.degreeStatistics.statistics[i].value+'</h3><div class="team-content"><p>'+json.degreeStatistics.statistics[i].description+'</p></div></div></div>';
+				}); //console.log(s);
+				$('#emp').append('<div class="container"><div class="row">'+s+'</div><div>');
+				$('#emp').append('<h5 class="stats">'+json.introduction.content[1].title+'</h5><hr><p>'+json.introduction.content[1].description+'</p><br>')
+				let empName='';
+				$.each(json.employers.employerNames,function(i, item){
+					empName+='<h4 class="empName">'+item+'</h4>'
+				});
+				$('#emp').append('<h2>'+json.employers.title+'</h2><li class="row">'+empName+'</li><br>');
+				let careerName='';
+				$.each(json.careers.careerNames,function(i, item){
+					careerName+='<h4 class="empName">'+item+'</h4>'
+				}); console.log(careerName);
+				$('#emp').append('<h2>'+json.careers.title+'</h2><li class="row">'+careerName+'</li>');
+			});
+
+	    xhr('get',{path:'/people/'}).done(function(json){
+	      //console.log(json);
+	      //just faculty
+	      //put out the people and name
+	      let x='';
+	      $.each(json.faculty, function(){
+	        x+='<div class="col-md-4 col-sm-6" data-featherlight="#fl" data-username="'+this.username+'"> <div class="our-team"><div class="pic"><img src="'+this.imagePath+'"></div><div class="team-content"><h3 class="title">'+this.name+'</h3><span class="post">'+this.title+'</span></div></div></div>';
+	      });
+	      $('#faculty .row').append(x);
+	      //staff...
+	      let s='';
+	      $.each(json.staff, function(){
+	        s+='<div class="col-md-4 col-sm-6" data-featherlight="#fl" data-username="'+this.username+'"> <div class="our-team"><div class="pic"><img src="'+this.imagePath+'"></div><div class="team-content"><h3 class="title">'+this.name+'</h3><span class="post">'+this.title+'</span></div></div></div>';
+	      });
+	      $('#staff .row').append(s);
+	      //while I have json, assign the event to it
+	      $('#faculty .row .col-md-4').on('click',function(){
+	        //console.log(json);
+	        var username = $(this).attr('data-username');
+	        //console.log(username);
+	        var me = getAttributesByName(json.faculty, 'username', username);
+					let info = '';
+					info='<div id="fl" class="lightbox"><h3 class="title">'+me.name+', <desc style="font-size:smaller;color:rgba(0,0,0,0.4)">'+me.title+'</desc></h3><hr><div class="row-fluid featherlight-inner"><div class="row"><p class="col-md-7 col-sm-7 col-xs-7"><img src="'+me.imagePath+'" style="width: 100%"></p><div class="col-md-5 col-sm-5 col-xs-5" style="margin-top:20px"><p>'+me.office+'</p><p>'+me.phone+'</p><p>'+me.email+'</p><p>'+me.website+'</p><p>'+me.twitter+'</p><p>'+me.facebook+'</p></div></div></div></div></div>'
+					if($('#fl').length == 0){
+						$('body').append(info);
+					} else {
+						$('#fl').remove()
+						$('body').append(info);
+					}
+					console.log(me);
+	      });
+
+	      $('#staff .row .col-md-4').on('click',function(){
+	        //console.log(json);
+	        var username = $(this).attr('data-username');
+	        console.log(username);
+	        var me = getAttributesByName(json.staff, 'username', username)
+					let info = '';
+					info='<div id="fl" class="lightbox"><h3 class="title">'+me.name+', <desc style="font-size:smaller;color:rgba(0,0,0,0.4)">'+me.title+'</desc></h3><hr><div class="row-fluid featherlight-inner"><div class="row"><p class="col-md-7 col-sm-7 col-xs-7"><img src="'+me.imagePath+'" style="width: 100%"></p><div class="col-md-5 col-sm-5 col-xs-5" style="margin-top:20px"><p>'+me.office+'</p><p>'+me.phone+'</p><p>'+me.email+'</p><p>'+me.website+'</p><p>'+me.twitter+'</p><p>'+me.facebook+'</p></div></div></div></div></div>'
+					if($('#fl').length == 0){
+						$('body').append(info);
+					} else {
+						$('#fl').remove()
+						$('body').append(info);
+					}
+	        console.log(me);
+	      });
+	    });
+
+	  /////////////////////////////////////////
+	  //ajax util
+	  //  args
+	  //    GetPost - is it a get or a post
+	  //    d - data
+	  //    idForSpinner - the id of the tag to put the spinner in
+
+	  //  example: xhr('get'), {path:'/about/', '#content'}.done();
+	  // OR        xhr('get'), {path:'/about/'}).done();
+
+	  function xhr(getPost, d, idForSpinner){
+	    return $.ajax({
+	      type:getPost,
+	      data: d,
+	      dataType:'json',
+	      cache: false,
+	      async: true,
+	      url:'proxy.php',
+	      beforeSend:function(){
+	        //make spinner
+	        $(idForSpinner).append('<img src="assets/media/gears.gif" class="bsSpinner"/>');
+	      }
+	    }).always(function(){
+	      //kill spinner
+	      //$(idForSpinner).find('.bsSpinner').fadeOut(500).remove();
+	      $(idForSpinner).find('.bsSpinner').fadeOut(500,function(){
+	        $(this).remove;
+	      });
+	    }).fail(function(err){
+	      console.log(err);
+	    });
+	  }
+
+	  //use this function to get an exact match on the attribute you are looking for
+	  //  return the sub object...
+	  // array - array to look into
+	  // name = name of the name=value pair to find the obj
+	  // val - value of the name=value pair to find the obj
+
+	  // Example: getAttributesByName(json.faculty, 'username', 'dsbics')
+	  function getAttributesByName(array, name, val){
+	    var result = null;
+	    $.each(array, function(){
+	      if(this[name]==val){
+	        result = this;
+	      }
+	    });
+	    return result;
+	  }
+
+	});
+	</script>
+</head>
+<body style="background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.5)), url('assets/media/hero.jgp'); height: 100vh; background-position:center; background-repeat: no-repeat; background-size: cover; background-attachment: fixed;">
+<div class="menu-link">
+	<span></span>
+	<span></span>
+	<span></span>
+</div>
+<section id="heading-text" style="height: 100vh;">
+	<div id='center-screen'>
+		<h1>
+			<span style="color: #F36E21">Information</span> Sciences & Technologies @ RIT
+		</h1>
+	</div>
+</section>
+<section style="width: 75%; background-color: white; margin-bottom: 4%;" id="about"></section>
+<section id="degrees" style="padding: 0;">
+<section style="; background-color: white;" id="undergrad">
+	<h2>Our Undergraduate Degrees</h2>
+	<p style="font-size: 12px; text-align:center;">Click for more information</p>
+	<hr>
+		<div class="row degreeType"></div>
+</section>
+<section id="grad">
+	<h2>Our Graduate Degrees</h2>
+	<p style="font-size: 12px; text-align:center;">Click for more information</p>
+	<hr>
+	<div class="row degreeType"></div>
+</section>
+</section>
+<section style="background-color: white;" id="minors">
+	<h2>Our Undergraduate Minors</h2>
+	<p style="font-size: 12px; text-align:center;">Click for more information</p>
+	<hr>
+	<div class="row degreeType"></div>
+</section>
+<section id="emp" style="text-align: center; color: white;">
+</section>
+<section id="faculty" style="background-color: white;">
+	<h2>Our Faculty</h2>
+	<p style="font-size: 12px; text-align:center;">Click for more information</p>
+	<hr>
+	<div class="container">
+			<div class="row">
+			</div>
+	</div>
+</section>
+<section id="staff" style="color: white;">
+	<h2>Our Staff</h2>
+	<p style="font-size: 12px; text-align:center;">Click for more information</p>
+	<hr>
+	<div class="container">
+			<div class="row">
+			</div>
+	</div>
+</section>
+
+	<menu>
+	<a class="close-btn" href="#close">&times;</a>
+		<ul>
+			<li><a href="#about">About</a></li>
+			<li><a href="#degrees">Degrees</a></li>
+			<li><a href="#minors">Minors</a></li>
+			<li><a href="#emp">Employment</a></li>
+			<li><a href="#faculty">Faculty</a></li>
+			<li><a href="#staff">Staff</a></li>
+		</ul>
+	</menu>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh" crossorigin="anonymous"></script>
+	<script src="js/main.js"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/featherlight@1.7.14/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
